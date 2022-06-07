@@ -25,6 +25,7 @@ const run = async () => {
   try {
     await client.connect();
     const itemsCollection = client.db("pcHouse").collection("items");
+    const myItemsCollection = client.db("pcHouse").collection("myItems");
     app.get("/items", async (req, res) => {
       const query = {};
       const cursor = itemsCollection.find(query);
@@ -48,12 +49,38 @@ const run = async () => {
     });
 
     // ADD NEW ITEM
-    app.post("/items", async (req, res) => {
+    app.post("/myItems", async (req, res) => {
       const newItem = req.body;
-      const result = await itemsCollection.insertOne(newItem);
+      const result = await myItemsCollection.insertOne(newItem);
       res.send(result);
     });
 
+    // put MyItems
+    app.put(`/myItems/:email`, async (req, res) => {
+      const email = req.params.email;
+      const updateData = req.body;
+      const filter = { email: ObjectId(email) };
+      const option = { upsert: true };
+      const updateDoc = {
+        $set: {
+          quantity: updateData.newQuantity,
+        },
+      };
+
+      const result = await myItemsCollection.updateOne(
+        filter,
+        updateDoc,
+        option
+      );
+      res.send(result);
+    });
+
+    app.get("/myItems/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: ObjectId(email) };
+      const myItems = await myItemsCollection.findOne(query);
+      res.send(myItems);
+    });
     // put item
     app.put(`/items/:id`, async (req, res) => {
       const id = req.params.id;
