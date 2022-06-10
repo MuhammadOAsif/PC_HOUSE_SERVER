@@ -5,13 +5,7 @@ require("dotenv").config();
 const port = process.env.PORT || 5000;
 const app = express();
 
-app.use(
-  cors({
-    origin: true,
-    optionsSuccessStatus: 200,
-    credentials: true,
-  })
-);
+app.use(cors({ origin: "https://pc-house-32c57.web.app" }));
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.sbssx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
